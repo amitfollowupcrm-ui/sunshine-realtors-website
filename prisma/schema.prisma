@@ -479,6 +479,8 @@ model Lead {
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
   
   // Relations
+  property          Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
   activities        LeadActivity[]
   syncLogs          CRMSyncLog[]
   
