@@ -137,6 +137,11 @@ export const Header: React.FC = () => {
                 Plots
               </Link>
               <div className="pt-2 border-t space-y-2">
+                {(user && (user.role === 'SELLER' || user.role === 'OWNER' || user.role === 'DEALER')) || !user ? (
+                  <Link href="/post-property" className="block px-2 py-2 bg-blue-600 text-white rounded-lg text-center font-medium hover:bg-blue-700">
+                    Post Property
+                  </Link>
+                ) : null}
                 {user ? (
                   <>
                     {user.role === 'BUYER' && (
