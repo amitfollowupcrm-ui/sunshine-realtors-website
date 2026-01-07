@@ -3,28 +3,12 @@
 import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
 import { prisma } from '@/config/database';
-import { getCurrentUser } from '@/lib/utils/auth';
-import { cookies } from 'next/headers';
-import { headers } from 'next/headers';
+import { getCurrentUserFromServer } from '@/lib/utils/auth';
 
 async function fetchCart() {
   try {
-    // Get cookies for authentication
-    const cookieStore = await cookies();
-    const headersList = await headers();
-    
-    // Create a request-like object for getCurrentUser
-    const authHeader = headersList.get('authorization') || 
-      (cookieStore.get('auth_token')?.value ? `Bearer ${cookieStore.get('auth_token')?.value}` : null);
-    
-    const request = new Request('http://localhost', {
-      headers: {
-        authorization: authHeader || '',
-        cookie: headersList.get('cookie') || '',
-      },
-    });
-    
-    const user = await getCurrentUser(request);
+    // Get user from server (using cookies)
+    const user = await getCurrentUserFromServer();
     if (!user) {
       return { cartItems: [], success: false, authenticated: false };
     }
