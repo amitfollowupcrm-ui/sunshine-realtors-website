@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/config/database';
 import { getCurrentUser } from '@/lib/utils/auth';
 import { PropertyCategory, PropertyType, PropertyStatus, FurnishingStatus, PossessionStatus } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 // Seeding endpoint - should only be accessible to super admin
 // Also supports GET method for easier browser access with secret key
@@ -104,7 +105,9 @@ async function seedProperties(request: NextRequest) {
           const basePrice = propertyType === PropertyType.PLOT 
             ? builtUpArea * 2000 
             : builtUpArea * 5000;
-          const price = Math.floor(basePrice + (Math.random() * basePrice * 0.5));
+          const price = new Prisma.Decimal(Math.floor(basePrice + (Math.random() * basePrice * 0.5)));
+          const builtUpAreaDecimal = new Prisma.Decimal(builtUpArea);
+          const carpetAreaDecimal = new Prisma.Decimal(Math.floor(builtUpArea * 0.8));
 
           const availableImages = propertyImages[propertyType] || propertyImages[PropertyType.APARTMENT];
           const numImages = Math.floor(Math.random() * 3) + 3;
@@ -127,8 +130,8 @@ async function seedProperties(request: NextRequest) {
               locality: `Sector ${Math.floor(Math.random() * 50) + 1}`,
               bedrooms,
               bathrooms,
-              builtUpArea,
-              carpetArea: Math.floor(builtUpArea * 0.8),
+              builtUpArea: builtUpAreaDecimal,
+              carpetArea: carpetAreaDecimal,
               furnishingStatus: FurnishingStatus.SEMI_FURNISHED,
               possessionStatus: PossessionStatus.READY_TO_MOVE,
               ownerId: seller.id,
