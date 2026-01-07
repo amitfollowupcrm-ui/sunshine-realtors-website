@@ -5,9 +5,10 @@ import { getCurrentUser } from '@/lib/utils/auth';
 // Remove from favorites
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
@@ -17,7 +18,7 @@ export async function DELETE(
     }
 
     const favorite = await prisma.propertyFavorite.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!favorite) {
@@ -37,7 +38,7 @@ export async function DELETE(
     const propertyId = favorite.propertyId;
 
     await prisma.propertyFavorite.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     // Update favorite count

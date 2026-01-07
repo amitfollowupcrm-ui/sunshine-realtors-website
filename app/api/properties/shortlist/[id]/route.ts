@@ -5,9 +5,10 @@ import { getCurrentUser } from '@/lib/utils/auth';
 // Remove from shortlist
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
@@ -17,7 +18,7 @@ export async function DELETE(
     }
 
     const shortlist = await prisma.propertyShortlist.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!shortlist) {
@@ -35,7 +36,7 @@ export async function DELETE(
     }
 
     await prisma.propertyShortlist.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
