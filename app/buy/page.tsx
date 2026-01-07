@@ -2,34 +2,40 @@
 
 import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
+import { propertyService } from '@/lib/services/property.service';
+import { PropertyStatus } from '@/types/property.types';
 
 async function fetchProperties(filters: any = {}) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sunshine-realtors-website.vercel.app';
-    const params = new URLSearchParams();
-    
-    if (filters.category) params.append('category', filters.category);
-    if (filters.city) params.append('city', filters.city);
-    if (filters.minPrice) params.append('minPrice', filters.minPrice.toString());
-    if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
-    if (filters.bedrooms) params.append('bedrooms', filters.bedrooms.toString());
-    params.append('limit', (filters.limit || 20).toString());
-    params.append('page', (filters.page || 1).toString());
+    // Use property service directly for server-side rendering (more efficient)
+    const serviceFilters: any = {
+      status: PropertyStatus.ACTIVE, // Only show active properties
+    };
 
-    const response = await fetch(`${baseUrl}/api/properties?${params.toString()}`, {
-      cache: 'no-store',
-    });
+    if (filters.category) serviceFilters.category = [filters.category];
+    if (filters.city) serviceFilters.city = [filters.city];
+    if (filters.minPrice) serviceFilters.priceMin = filters.minPrice;
+    if (filters.maxPrice) serviceFilters.priceMax = filters.maxPrice;
+    if (filters.bedrooms) serviceFilters.bedrooms = [filters.bedrooms];
+    if (filters.page) serviceFilters.page = filters.page;
+    if (filters.limit) serviceFilters.limit = filters.limit;
 
-    if (!response.ok) {
-      console.error('Failed to fetch properties:', response.statusText);
-      return { properties: [], total: 0, page: 1, limit: 20, totalPages: 0 };
-    }
+    const result = await propertyService.searchProperties(serviceFilters);
 
-    const data = await response.json();
-    return data.success ? data : { properties: [], total: 0, page: 1, limit: 20, totalPages: 0 };
+    return {
+      success: true,
+      ...result,
+    };
   } catch (error) {
     console.error('Error fetching properties:', error);
-    return { properties: [], total: 0, page: 1, limit: 20, totalPages: 0 };
+    return { 
+      success: false,
+      properties: [], 
+      total: 0, 
+      page: 1, 
+      limit: 20, 
+      totalPages: 0 
+    };
   }
 }
 
