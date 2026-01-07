@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/hooks/useAuth';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const [cartCount, setCartCount] = useState(0);
 
   // Fetch cart count for buyers
