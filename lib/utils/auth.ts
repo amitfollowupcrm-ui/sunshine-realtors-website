@@ -26,8 +26,11 @@ export async function getCurrentUserFromServer() {
     let token = headersList.get('authorization')?.replace('Bearer ', '');
     
     // If no token in header, try to get from cookies
+    // Check both 'token' (from login API) and 'auth_token' (from client-side)
     if (!token) {
-      token = cookieStore.get('auth_token')?.value || null;
+      token = cookieStore.get('token')?.value || 
+              cookieStore.get('auth_token')?.value || 
+              null;
     }
     
     if (!token) {
