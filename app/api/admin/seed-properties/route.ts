@@ -105,9 +105,11 @@ async function seedProperties(request: NextRequest) {
           const basePrice = propertyType === PropertyType.PLOT 
             ? builtUpArea * 2000 
             : builtUpArea * 5000;
-          const price = new Prisma.Decimal(Math.floor(basePrice + (Math.random() * basePrice * 0.5)));
+          const priceValue = Math.floor(basePrice + (Math.random() * basePrice * 0.5));
+          const price = new Prisma.Decimal(priceValue);
           const builtUpAreaDecimal = new Prisma.Decimal(builtUpArea);
-          const carpetAreaDecimal = new Prisma.Decimal(Math.floor(builtUpArea * 0.8));
+          const carpetAreaValue = Math.floor(builtUpArea * 0.8);
+          const carpetAreaDecimal = new Prisma.Decimal(carpetAreaValue);
 
           const availableImages = propertyImages[propertyType] || propertyImages[PropertyType.APARTMENT];
           const numImages = Math.floor(Math.random() * 3) + 3;
@@ -156,10 +158,12 @@ async function seedProperties(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error seeding properties:', error);
+    console.error('Error stack:', error.stack);
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Failed to seed properties',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       { status: 500 }
     );
