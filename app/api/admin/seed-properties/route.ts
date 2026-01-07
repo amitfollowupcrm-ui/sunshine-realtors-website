@@ -131,6 +131,7 @@ async function seedProperties(request: NextRequest) {
               carpetArea: Math.floor(builtUpArea * 0.8),
               furnishingStatus: FurnishingStatus.SEMI_FURNISHED,
               possessionStatus: PossessionStatus.READY_TO_MOVE,
+              ownerId: seller.id,
               listedById: seller.id,
               primaryImageUrl: selectedImages[0],
               imageUrls: selectedImages,
