@@ -1,81 +1,112 @@
-// POST /api/properties - Create new property
-
 import { NextRequest, NextResponse } from 'next/server';
 import { propertyService } from '@/lib/services/property.service';
-import { withAuth } from '@/lib/middleware/auth.middleware';
+import { getCurrentUser } from '@/lib/utils/auth';
 import { propertyCreateSchema } from '@/lib/validation/property.schemas';
-import { RBAC } from '@/lib/auth/rbac';
-import { UserRole } from '@/types/user.types';
+import { PropertyCategory, PropertyStatus } from '@/types/property.types';
 
-async function handler(
-  request: NextRequest,
-  context: { user: any }
-): Promise<NextResponse> {
+// Create a new property (for SELLER role)
+export async function POST(request: NextRequest) {
   try {
-    // Check permission
-    if (!RBAC.hasPermission(context.user.role, 'properties:create')) {
+    const user = await getCurrentUser(request);
+    if (!user) {
       return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'FORBIDDEN',
-            message: 'Insufficient permissions to create property',
-          },
-        },
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user is a seller
+    if (user.role !== 'SELLER' && user.role !== 'OWNER' && user.role !== 'SUPER_ADMIN' && user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Only sellers can create properties' },
         { status: 403 }
       );
     }
 
     const body = await request.json();
-
-    // Validate input
     const validationResult = propertyCreateSchema.safeParse(body);
+
     if (!validationResult.success) {
       return NextResponse.json(
         {
           success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid input data',
-            details: validationResult.error.flatten().fieldErrors,
-          },
+          error: 'Validation failed',
+          details: validationResult.error.issues,
         },
-        { status: 422 }
+        { status: 400 }
       );
     }
 
-    // Create property
     const property = await propertyService.createProperty(
       validationResult.data,
-      context.user.userId,
-      context.user.userId // listedById same as owner for now
+      user.userId,
+      user.userId // listedById
     );
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: property,
-        message: 'Property created successfully. Pending verification.',
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      success: true,
+      property,
+    });
   } catch (error: any) {
-    console.error('Create property error:', error);
+    console.error('Error creating property:', error);
     return NextResponse.json(
       {
         success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'An error occurred while creating property',
-        },
+        error: error.message || 'Failed to create property',
       },
       { status: 500 }
     );
   }
 }
 
-export const POST = withAuth(handler, {
-  requireAuth: true,
-  requirePermissions: ['properties:create'],
-});
+// Get properties (with filters for dealers/buyers) - Public access allowed
+export async function GET(request: NextRequest) {
+  try {
+    // Allow public browsing - authentication is optional
+    const user = await getCurrentUser(request);
+
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category') as PropertyCategory | null;
+    const city = searchParams.get('city');
+    const state = searchParams.get('state');
+    const propertyType = searchParams.get('propertyType');
+    const minPrice = searchParams.get('minPrice');
+    const maxPrice = searchParams.get('maxPrice');
+    const bedrooms = searchParams.get('bedrooms');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+
+    const filters: any = {
+      status: PropertyStatus.ACTIVE, // Only show active properties
+    };
+
+    if (category) filters.category = [category];
+    if (city) filters.city = [city];
+    if (state) filters.state = [state];
+    if (propertyType) filters.propertyType = [propertyType];
+    if (minPrice) filters.priceMin = parseFloat(minPrice);
+    if (maxPrice) filters.priceMax = parseFloat(maxPrice);
+    if (bedrooms) filters.bedrooms = [parseInt(bedrooms)];
+    if (page) filters.page = page;
+    if (limit) filters.limit = limit;
+
+    // If user is a dealer, show all properties
+    // If user is a buyer, show all active properties
+    const result = await propertyService.searchProperties(filters);
+
+    return NextResponse.json({
+      success: true,
+      ...result,
+    });
+  } catch (error: any) {
+    console.error('Error fetching properties:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || 'Failed to fetch properties',
+      },
+      { status: 500 }
+    );
+  }
+}
 
