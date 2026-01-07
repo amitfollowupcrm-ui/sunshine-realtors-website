@@ -53,9 +53,9 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
             {/* Image Gallery */}
             <div className="bg-white rounded-lg shadow-md mb-6">
               <div className="relative h-96 bg-gray-200 rounded-t-lg overflow-hidden">
-                {property.primaryImageUrl ? (
+                {property.media?.primaryImageUrl ? (
                   <Image
-                    src={property.primaryImageUrl}
+                    src={property.media.primaryImageUrl}
                     alt={property.title}
                     fill
                     className="object-cover"
@@ -77,8 +77,8 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                 <div>
                   <h1 className="text-3xl font-bold mb-2">{property.title}</h1>
                   <p className="text-gray-600 text-lg">
-                    {property.locality ? `${property.locality}, ` : ''}
-                    {property.city}, {property.state}
+                    {property.location.locality ? `${property.location.locality}, ` : ''}
+                    {property.location.city}, {property.location.state}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -101,44 +101,44 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               <div className="border-b pb-6 mb-6">
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-bold text-blue-600">
-                    ₹{Number(property.price).toLocaleString('en-IN')}
+                    ₹{Number(property.pricing.price).toLocaleString('en-IN')}
                   </span>
-                  {property.pricePerUnit && (
+                  {property.pricing.pricePerUnit && (
                     <span className="text-gray-500">
-                      (₹{Number(property.pricePerUnit).toLocaleString('en-IN')}/sqft)
+                      (₹{Number(property.pricing.pricePerUnit).toLocaleString('en-IN')}/sqft)
                     </span>
                   )}
                 </div>
-                {property.negotiable && (
+                {property.pricing.negotiable && (
                   <p className="text-sm text-gray-600 mt-1">Price is negotiable</p>
                 )}
               </div>
 
               {/* Key Features */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {property.bedrooms && (
+                {property.details.bedrooms && (
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{property.bedrooms}</div>
+                    <div className="text-2xl font-bold text-blue-600">{property.details.bedrooms}</div>
                     <div className="text-sm text-gray-600">Bedrooms</div>
                   </div>
                 )}
-                {property.bathrooms && (
+                {property.details.bathrooms && (
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{property.bathrooms}</div>
+                    <div className="text-2xl font-bold text-blue-600">{property.details.bathrooms}</div>
                     <div className="text-sm text-gray-600">Bathrooms</div>
                   </div>
                 )}
-                {property.builtUpArea && (
+                {property.details.builtUpArea && (
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">
-                      {Number(property.builtUpArea).toLocaleString('en-IN')}
+                      {Number(property.details.builtUpArea).toLocaleString('en-IN')}
                     </div>
                     <div className="text-sm text-gray-600">Sqft</div>
                   </div>
                 )}
-                {property.floorNumber && (
+                {property.details.floorNumber && (
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{property.floorNumber}</div>
+                    <div className="text-2xl font-bold text-blue-600">{property.details.floorNumber}</div>
                     <div className="text-sm text-gray-600">Floor</div>
                   </div>
                 )}
@@ -159,38 +159,38 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                       <dt className="text-gray-600">Property Type</dt>
                       <dd className="font-medium">{property.propertyType}</dd>
                     </div>
-                    {property.furnishingStatus && (
+                    {property.details.furnishingStatus && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Furnishing</dt>
-                        <dd className="font-medium">{property.furnishingStatus.replace('_', ' ')}</dd>
+                        <dd className="font-medium">{property.details.furnishingStatus.replace('_', ' ')}</dd>
                       </div>
                     )}
-                    {property.builtUpArea && (
+                    {property.details.builtUpArea && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Built-up Area</dt>
                         <dd className="font-medium">
-                          {Number(property.builtUpArea).toLocaleString('en-IN')} {property.areaUnit || 'sqft'}
+                          {Number(property.details.builtUpArea).toLocaleString('en-IN')} {property.details.areaUnit || 'sqft'}
                         </dd>
                       </div>
                     )}
-                    {property.carpetArea && (
+                    {property.details.carpetArea && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Carpet Area</dt>
                         <dd className="font-medium">
-                          {Number(property.carpetArea).toLocaleString('en-IN')} {property.areaUnit || 'sqft'}
+                          {Number(property.details.carpetArea).toLocaleString('en-IN')} {property.details.areaUnit || 'sqft'}
                         </dd>
                       </div>
                     )}
-                    {property.facing && (
+                    {property.details.facing && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Facing</dt>
-                        <dd className="font-medium">{property.facing}</dd>
+                        <dd className="font-medium">{property.details.facing}</dd>
                       </div>
                     )}
-                    {property.ageOfConstruction !== null && property.ageOfConstruction !== undefined && (
+                    {property.details.ageOfConstruction !== null && property.details.ageOfConstruction !== undefined && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Age of Construction</dt>
-                        <dd className="font-medium">{property.ageOfConstruction} years</dd>
+                        <dd className="font-medium">{property.details.ageOfConstruction} years</dd>
                       </div>
                     )}
                   </dl>
@@ -199,29 +199,29 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                 <div>
                   <h3 className="font-semibold mb-3">Additional Details</h3>
                   <dl className="space-y-2">
-                    {property.parking !== null && property.parking !== undefined && (
+                    {property.details.parking !== null && property.details.parking !== undefined && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Parking</dt>
-                        <dd className="font-medium">{property.parking} {property.parking === 1 ? 'Space' : 'Spaces'}</dd>
+                        <dd className="font-medium">{property.details.parking} {property.details.parking === 1 ? 'Space' : 'Spaces'}</dd>
                       </div>
                     )}
-                    {property.powerBackup !== null && property.powerBackup !== undefined && (
+                    {property.details.powerBackup !== null && property.details.powerBackup !== undefined && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Power Backup</dt>
-                        <dd className="font-medium">{property.powerBackup ? 'Yes' : 'No'}</dd>
+                        <dd className="font-medium">{property.details.powerBackup ? 'Yes' : 'No'}</dd>
                       </div>
                     )}
-                    {property.waterSupply && (
+                    {property.details.waterSupply && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Water Supply</dt>
-                        <dd className="font-medium">{property.waterSupply}</dd>
+                        <dd className="font-medium">{property.details.waterSupply}</dd>
                       </div>
                     )}
-                    {property.maintenanceCharges && (
+                    {property.pricing.maintenanceCharges && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600">Maintenance</dt>
                         <dd className="font-medium">
-                          ₹{Number(property.maintenanceCharges).toLocaleString('en-IN')}/month
+                          ₹{Number(property.pricing.maintenanceCharges).toLocaleString('en-IN')}/month
                         </dd>
                       </div>
                     )}
@@ -230,11 +230,11 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               </div>
 
               {/* Amenities */}
-              {property.amenities && property.amenities.length > 0 && (
+              {property.details.amenities && property.details.amenities.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold mb-3">Amenities</h3>
                   <div className="flex flex-wrap gap-2">
-                    {property.amenities.map((amenity) => (
+                    {property.details.amenities.map((amenity) => (
                       <span key={amenity} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
                         {amenity}
                       </span>
@@ -250,10 +250,10 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                   <p className="text-gray-500">Map will be displayed here</p>
                 </div>
                 <p className="mt-2 text-gray-600">
-                  {property.addressLine1 && `${property.addressLine1}, `}
-                  {property.locality && `${property.locality}, `}
-                  {property.city}, {property.state}
-                  {property.pincode && ` ${property.pincode}`}
+                  {property.location.addressLine1 && `${property.location.addressLine1}, `}
+                  {property.location.locality && `${property.location.locality}, `}
+                  {property.location.city}, {property.location.state}
+                  {property.location.pincode && ` ${property.location.pincode}`}
                 </p>
               </div>
             </div>
