@@ -20,10 +20,8 @@ if (!connectionString) {
   process.exit(1);
 }
 
-// Add pgbouncer parameter if using pooler
-const dbUrl = connectionString.includes('pooler.supabase.com') 
-  ? (connectionString.includes('?') ? connectionString + '&pgbouncer=true' : connectionString + '?pgbouncer=true')
-  : connectionString;
+// Use connection string as-is (should already have pgbouncer=true if needed)
+const dbUrl = connectionString;
 
 const prisma = new PrismaClient({
   datasources: {
