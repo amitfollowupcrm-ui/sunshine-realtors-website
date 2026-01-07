@@ -46,6 +46,35 @@ export enum PossessionStatus {
   RESALE = 'RESALE',
 }
 
+export enum LeadSource {
+  PROPERTY_INQUIRY = 'PROPERTY_INQUIRY',
+  CONTACT_FORM = 'CONTACT_FORM',
+  PHONE_CALL = 'PHONE_CALL',
+  WALK_IN = 'WALK_IN',
+  REFERRAL = 'REFERRAL',
+  SOCIAL_MEDIA = 'SOCIAL_MEDIA',
+  ADVERTISEMENT = 'ADVERTISEMENT',
+}
+
+export enum LeadStatus {
+  NEW = 'NEW',
+  CONTACTED = 'CONTACTED',
+  QUALIFIED = 'QUALIFIED',
+  VIEWING_SCHEDULED = 'VIEWING_SCHEDULED',
+  VIEWED = 'VIEWED',
+  NEGOTIATING = 'NEGOTIATING',
+  CONVERTED = 'CONVERTED',
+  LOST = 'LOST',
+  CLOSED = 'CLOSED',
+}
+
+export enum InquiryType {
+  BUY = 'BUY',
+  RENT = 'RENT',
+  SELL = 'SELL',
+  INVEST = 'INVEST',
+}
+
 export interface PropertyLocation {
   country: string;
   state: string;
@@ -190,4 +219,5 @@ export interface PropertyCreateInput {
 export interface PropertyUpdateInput extends Partial<PropertyCreateInput> {
   id: string;
 }
+
 

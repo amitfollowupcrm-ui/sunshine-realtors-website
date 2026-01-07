@@ -103,3 +103,5 @@ export type PropertyUpdateInput = z.infer<typeof propertyUpdateSchema>;
 export type PropertySearchInput = z.infer<typeof propertySearchSchema>;
 export type PropertyModerateInput = z.infer<typeof propertyModerateSchema>;
 
+
+

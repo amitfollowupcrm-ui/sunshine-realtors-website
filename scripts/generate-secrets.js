@@ -14,3 +14,5 @@ console.log('JWT_REFRESH_SECRET=' + generateSecret());
 console.log('');
 console.log('Copy these values to your .env.local file');
 
+
+

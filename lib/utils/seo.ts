@@ -98,3 +98,5 @@ export function generateFAQSchema(faqs: Array<{ question: string; answer: string
   };
 }
 
+
+

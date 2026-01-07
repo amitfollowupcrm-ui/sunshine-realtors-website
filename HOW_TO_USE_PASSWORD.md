@@ -115,3 +115,5 @@ postgresql://postgres.cgodlegdxrwhpjevxlel:YourActualPasswordHere@aws-0-ap-south
 
 **Copy the connection string from Supabase, replace `[YOUR-PASSWORD]` with your actual password, and paste it here!** 📋
 
+
+

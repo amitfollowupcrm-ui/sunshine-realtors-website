@@ -126,7 +126,6 @@ function generateDefaultKey(request: NextRequest): string {
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
     request.headers.get('x-real-ip') ||
-    request.ip ||
     'unknown';
 
   const path = request.nextUrl.pathname;
@@ -149,7 +148,6 @@ export function rateLimitByIP(): RateLimitOptions['keyGenerator'] {
     const ip =
       req.headers.get('x-forwarded-for')?.split(',')[0] ||
       req.headers.get('x-real-ip') ||
-      req.ip ||
       'unknown';
     return `ip:${ip}`;
   };
@@ -215,4 +213,5 @@ export const rateLimiters = {
       keyGenerator: rateLimitByIP(),
     }),
 };
+
 

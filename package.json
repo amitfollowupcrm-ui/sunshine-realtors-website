@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "build:static": "node scripts/build-static.js",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
@@ -12,9 +13,11 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "deploy": "npm run build && firebase deploy --only hosting",
+    "deploy": "npm run build:static && firebase deploy --only hosting",
+    "deploy:firebase": "npm run build:static && firebase deploy --only hosting",
     "setup:deploy": "node scripts/generate-secrets.js",
-    "generate:secrets": "node scripts/generate-secrets.js"
+    "generate:secrets": "node scripts/generate-secrets.js",
+    "create:admin": "node scripts/create-super-admin.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

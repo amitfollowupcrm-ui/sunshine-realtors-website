@@ -137,3 +137,5 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   );
 };
 
+
+

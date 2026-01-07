@@ -135,6 +135,7 @@ export interface CRMSyncOptions {
   maxRetries?: number;
   delay?: number;
   priority?: 'low' | 'medium' | 'high';
+  force?: boolean;
 }
 
 export interface CRMSyncResponse {
@@ -143,4 +144,5 @@ export interface CRMSyncResponse {
   message?: string;
   error?: string;
 }
+
 

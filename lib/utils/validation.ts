@@ -69,10 +69,11 @@ export function isValidFileSize(file: File, maxSizeMB: number): boolean {
  */
 export function formatValidationErrors(error: z.ZodError): Record<string, string> {
   const errors: Record<string, string> = {};
-  error.errors.forEach((err) => {
+  error.issues.forEach((err) => {
     const path = err.path.join('.');
     errors[path] = err.message;
   });
   return errors;
 }
+
 

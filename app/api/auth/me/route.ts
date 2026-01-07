@@ -1,56 +1,47 @@
-// GET /api/auth/me
-// Get current authenticated user
-
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/middleware/auth.middleware';
-import { authService } from '@/lib/services/auth.service';
+import { prisma } from '@/config/database';
 
-async function handler(
-  request: NextRequest,
-  context: { user: any }
-): Promise<NextResponse> {
+async function handler(request: NextRequest, context: { user: any }) {
   try {
-    const user = await authService.getUserById(context.user.userId);
+    const { user } = context;
 
-    if (!user) {
+    // Fetch full user data with profile
+    const fullUser = await prisma.user.findUnique({
+      where: { id: user.userId },
+      include: {
+        profile: true,
+      },
+    });
+
+    if (!fullUser) {
       return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: 'User not found',
-          },
-        },
+        { success: false, error: 'User not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: {
-          id: user.id,
-          email: user.email,
-          fullName: user.fullName,
-          role: user.role,
-          permissions: user.permissions,
-          profile: user.profile,
-          isVerified: user.isVerified,
-          createdAt: user.createdAt,
-        },
+    // Return user data (exclude password hash)
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: fullUser.id,
+        email: fullUser.email,
+        phone: fullUser.phone,
+        fullName: fullUser.fullName,
+        avatarUrl: fullUser.avatarUrl,
+        role: fullUser.role,
+        isVerified: fullUser.isVerified,
+        isActive: fullUser.isActive,
+        profile: fullUser.profile,
+        createdAt: fullUser.createdAt,
+        updatedAt: fullUser.updatedAt,
       },
-      { status: 200 }
-    );
+    });
   } catch (error: any) {
     console.error('Get user error:', error);
     return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'An error occurred',
-        },
-      },
+      { success: false, error: 'Failed to fetch user data' },
       { status: 500 }
     );
   }

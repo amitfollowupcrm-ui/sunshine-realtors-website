@@ -1,59 +1,55 @@
-// POST /api/auth/refresh
-// Refresh access token
-
 import { NextRequest, NextResponse } from 'next/server';
 import { authService } from '@/lib/services/auth.service';
-import { refreshTokenSchema } from '@/lib/validation/auth.schemas';
+import { rateLimiters } from '@/lib/middleware/rateLimit.middleware';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-
-    // Validate input
-    const validationResult = refreshTokenSchema.safeParse(body);
-    if (!validationResult.success) {
+    // Rate limiting (100 requests per 15 minutes per IP)
+    const rateLimitResult = await rateLimiters.public(request);
+    if (rateLimitResult && 'error' in rateLimitResult && rateLimitResult.error) {
+      return rateLimitResult.error;
+    }
+    if (rateLimitResult && !rateLimitResult.allowed) {
       return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid input data',
-            details: validationResult.error.flatten().fieldErrors,
-          },
-        },
-        { status: 422 }
+        { success: false, error: 'Too many requests. Please try again later.' },
+        { status: 429 }
       );
     }
 
-    const { refreshToken } = validationResult.data;
+    // Get refresh token from body
+    const body = await request.json();
+    const { refreshToken } = body;
 
-    // Refresh token
-    const result = await authService.refreshAccessToken(refreshToken);
+    if (!refreshToken) {
+      return NextResponse.json(
+        { success: false, error: 'Refresh token is required' },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: {
-          token: result.token,
-          expiresIn: result.expiresIn,
-        },
-        message: 'Token refreshed successfully',
-      },
-      { status: 200 }
-    );
+    // Refresh tokens
+    const authResponse = await authService.refreshAccessToken(refreshToken);
+
+    return NextResponse.json({
+      success: true,
+      token: authResponse.token,
+      expiresIn: authResponse.expiresIn,
+    });
   } catch (error: any) {
-    console.error('Refresh token error:', error);
-
+    console.error('Token refresh error:', error);
+    
     return NextResponse.json(
-      {
-        success: false,
-        error: {
-          code: 'INVALID_REFRESH_TOKEN',
-          message: error.message || 'Invalid or expired refresh token',
-        },
-      },
+      { success: false, error: 'Invalid or expired refresh token' },
       { status: 401 }
     );
   }
+}
+
+// Handle unsupported methods
+export async function GET() {
+  return NextResponse.json(
+    { success: false, error: 'Method not allowed' },
+    { status: 405 }
+  );
 }
 

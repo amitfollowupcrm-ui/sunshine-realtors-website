@@ -1,15 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // For Firebase Hosting static export, uncomment:
-  // output: 'export',
-  // images: { unoptimized: true },
-  // trailingSlash: true,
-  
-  // For Vercel or full Next.js hosting (recommended):
-  images: {
-    domains: ['localhost'],
-    // Add your image domains here (CDN, S3, etc.)
+  // Vercel deployment configuration (supports API routes)
+  // output: 'export', // ❌ Removed for Vercel - allows API routes
+  images: { 
+    unoptimized: false, // ✅ Vercel has built-in image optimization
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.upstash.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.vercel.app',
+      },
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+      },
+      // Add your image CDN domains here
+    ],
   },
+  trailingSlash: false, // Vercel doesn't require trailing slash
   
   // Environment variables that will be available in the client
   env: {
@@ -19,7 +34,6 @@ const nextConfig = {
   
   // Optimize for production
   reactStrictMode: true,
-  swcMinify: true,
 };
 
 module.exports = nextConfig;

@@ -39,7 +39,12 @@ export function useAuth() {
 
       if (response.ok) {
         const data = await response.json();
-        setUser(data.data);
+        if (data.success && data.user) {
+          setUser(data.user);
+        } else {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('refresh_token');
+        }
       } else {
         localStorage.removeItem('auth_token');
         localStorage.removeItem('refresh_token');
@@ -61,16 +66,26 @@ export function useAuth() {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Login failed');
+      let errorMessage = 'Login failed';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || errorMessage;
+      } catch (e) {
+        // If response is not JSON, use default message
+      }
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
-    localStorage.setItem('auth_token', data.data.token);
-    localStorage.setItem('refresh_token', data.data.refreshToken);
-    setUser(data.data.user);
     
-    return data.data;
+    if (data.success && data.token) {
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('refresh_token', data.refreshToken || '');
+      setUser(data.user);
+      return { user: data.user, token: data.token, refreshToken: data.refreshToken };
+    }
+    
+    throw new Error(data.error || 'Login failed');
   };
 
   const register = async (userData: {
@@ -89,16 +104,26 @@ export function useAuth() {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Registration failed');
+      let errorMessage = 'Registration failed';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || errorMessage;
+      } catch (e) {
+        // If response is not JSON, use default message
+      }
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
-    localStorage.setItem('auth_token', data.data.token);
-    localStorage.setItem('refresh_token', data.data.refreshToken);
-    setUser(data.data.user);
     
-    return data.data;
+    if (data.success && data.token) {
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('refresh_token', data.refreshToken || '');
+      setUser(data.user);
+      return { user: data.user, token: data.token, refreshToken: data.refreshToken };
+    }
+    
+    throw new Error(data.error || 'Registration failed');
   };
 
   const logout = async () => {
@@ -131,4 +156,6 @@ export function useAuth() {
     isAuthenticated: !!user,
   };
 }
+
+
 

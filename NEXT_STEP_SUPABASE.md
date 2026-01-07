@@ -76,3 +76,5 @@ DATABASE_URL: postgresql://postgres...
 
 **Get the Supabase Database URL and paste it here!** 📝
 
+
+

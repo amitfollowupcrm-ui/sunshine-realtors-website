@@ -691,3 +691,5 @@ users (1) ──< (N) dealer_territories (dealer_id)
 **Database:** PostgreSQL 15+
 **ORM:** Prisma
 
+
+

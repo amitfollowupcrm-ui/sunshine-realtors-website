@@ -131,7 +131,7 @@ class PropertyService {
       crmService.syncProperty(property.id).catch(console.error);
     }
 
-    return property as Property;
+    return property as unknown as Property;
   }
 
   /**
@@ -189,8 +189,8 @@ class PropertyService {
       if (input.media.primaryImageUrl) updateData.primaryImageUrl = input.media.primaryImageUrl;
       if (input.media.imageUrls) updateData.imageUrls = input.media.imageUrls;
     }
-    if (input.status) {
-      updateData.status = input.status;
+    if ('status' in input && input.status) {
+      updateData.status = (input as any).status;
     }
 
     const property = await prisma.property.update({
@@ -224,7 +224,7 @@ class PropertyService {
       crmService.syncProperty(property.id).catch(console.error);
     }
 
-    return property as Property;
+    return property as unknown as Property;
   }
 
   /**
@@ -273,7 +273,7 @@ class PropertyService {
     if (property) {
       // Cache for 1 hour
       await cache.set(CacheKeys.property(propertyId), property, 3600);
-      return property as Property;
+      return property as unknown as Property;
     }
 
     return null;
@@ -318,7 +318,7 @@ class PropertyService {
         },
       }).catch(console.error);
 
-      return property as Property;
+      return property as unknown as Property;
     }
 
     return null;
@@ -465,7 +465,7 @@ class PropertyService {
     ]);
 
     const result: PropertySearchResult = {
-      properties: properties as Property[],
+      properties: properties as unknown as Property[],
       total,
       page,
       limit,
@@ -506,7 +506,7 @@ class PropertyService {
       crmService.syncProperty(property.id).catch(console.error);
     }
 
-    return property as Property;
+    return property as unknown as Property;
   }
 
   /**
@@ -548,4 +548,5 @@ class PropertyService {
 }
 
 export const propertyService = new PropertyService();
+
 

@@ -46,28 +46,24 @@ export const Modal: React.FC<ModalProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          {(title || onClose) && (
-            <div className="flex items-center justify-between p-6 border-b">
-              {title && (
-                <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-              )}
-              {onClose && (
-                <button
-                  onClick={onClose}
-                  className="text-gray-400 hover:text-gray-500 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
+          <div className="flex items-center justify-between p-6 border-b">
+            {title && (
+              <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+            )}
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500 transition-colors ml-auto"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
 
           {/* Body */}
           <div className="p-6">{children}</div>
@@ -83,4 +79,5 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   );
 };
+
 

@@ -52,3 +52,5 @@ export type LeadUpdateInput = z.infer<typeof leadUpdateSchema>;
 export type LeadAssignInput = z.infer<typeof leadAssignSchema>;
 export type LeadFilterInput = z.infer<typeof leadFilterSchema>;
 
+
+

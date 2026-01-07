@@ -7,7 +7,6 @@ import { cache, CacheKeys } from '@/config/redis';
 import type {
   CRMSyncLog,
   CRMSyncStatus,
-  CRMSyncDirection,
   CRMSyncEvent,
   CRMEntityType,
   CRMLeadPayload,
@@ -17,6 +16,7 @@ import type {
   CRMSyncResponse,
   CRMSyncOptions,
 } from '@/types/crm.types';
+import { CRMSyncDirection } from '@/types/crm.types';
 
 class CRMService {
   private async makeRequest(
@@ -50,7 +50,7 @@ class CRMService {
 
   async syncLead(
     leadId: string,
-    direction: CRMSyncDirection = 'OUTBOUND',
+    direction: CRMSyncDirection = CRMSyncDirection.OUTBOUND,
     options?: CRMSyncOptions
   ): Promise<CRMSyncResponse> {
     try {
@@ -209,7 +209,7 @@ class CRMService {
 
   async syncProperty(
     propertyId: string,
-    direction: CRMSyncDirection = 'OUTBOUND',
+    direction: CRMSyncDirection = CRMSyncDirection.OUTBOUND,
     options?: CRMSyncOptions
   ): Promise<CRMSyncResponse> {
     // Similar implementation for property sync
@@ -348,4 +348,5 @@ class CRMService {
 }
 
 export const crmService = new CRMService();
+
 
