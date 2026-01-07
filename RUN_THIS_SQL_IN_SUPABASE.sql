@@ -65,3 +65,4 @@ ALTER TABLE "property_cart" ADD CONSTRAINT "property_cart_property_id_fkey" FORE
 ALTER TABLE "property_shortlist" ADD CONSTRAINT "property_shortlist_dealer_id_fkey" FOREIGN KEY ("dealer_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "property_shortlist" ADD CONSTRAINT "property_shortlist_property_id_fkey" FOREIGN KEY ("property_id") REFERENCES "properties"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+

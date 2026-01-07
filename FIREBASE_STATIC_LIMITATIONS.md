@@ -116,3 +116,4 @@ If you want to proceed with Firebase Hosting despite limitations, or need help s
 **Status:** ⚠️ Firebase Hosting configured, but API routes disabled
 
 
+

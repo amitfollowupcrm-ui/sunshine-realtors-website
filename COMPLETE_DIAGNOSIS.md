@@ -78,3 +78,4 @@ This will show the exact database error.
 3. Or check Supabase firewall/IP restrictions
 4. Or check Vercel logs for exact error
 
+

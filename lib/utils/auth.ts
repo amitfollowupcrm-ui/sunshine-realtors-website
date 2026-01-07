@@ -12,3 +12,4 @@ export async function getCurrentUser(request: NextRequest) {
   return user;
 }
 
+

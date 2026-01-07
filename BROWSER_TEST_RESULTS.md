@@ -49,3 +49,4 @@ The root issue remains: **Vercel cannot connect to Supabase database**.
 
 **The login page is working correctly - the issue is the database connection configuration!**
 
+

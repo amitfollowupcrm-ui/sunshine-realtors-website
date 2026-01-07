@@ -149,3 +149,4 @@ To set up automatic deployments:
 **Status:** ✅ Configured for Firebase Hosting Static Export
 
 
+

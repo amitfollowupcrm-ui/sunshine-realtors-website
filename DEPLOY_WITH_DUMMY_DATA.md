@@ -110,3 +110,4 @@ All with proper indexes and foreign key constraints.
 - Properties are set to ACTIVE status for immediate visibility
 - Seller user email: `seller@sunshinerealtors.com` (password: `Seller123!`)
 
+

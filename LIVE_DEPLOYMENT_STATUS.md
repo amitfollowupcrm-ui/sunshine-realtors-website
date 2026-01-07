@@ -144,3 +144,4 @@ See:
 - `VERCEL_DEPLOYMENT.md` - Detailed Vercel setup
 - Database connection test: `node scripts/test-db-connection.js`
 
+

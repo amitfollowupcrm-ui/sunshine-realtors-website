@@ -26,31 +26,34 @@ export function useAuth() {
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
+      
+      // Always try to check auth, even without token (endpoint now returns 200 for unauthenticated)
       const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {},
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.user) {
+        if (data.success && data.authenticated && data.user) {
           setUser(data.user);
         } else {
+          // Not authenticated or invalid token - clear tokens silently
           localStorage.removeItem('auth_token');
           localStorage.removeItem('refresh_token');
         }
       } else {
+        // Only log non-200 responses as errors
+        console.error('Auth check failed:', response.status, response.statusText);
         localStorage.removeItem('auth_token');
         localStorage.removeItem('refresh_token');
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      // Network errors - only log actual failures
+      console.error('Auth check network error:', error);
     } finally {
       setLoading(false);
     }

@@ -124,3 +124,4 @@ https://sunshine-realtors-website.vercel.app/api/auth/google
 
 **Once you add this URI and save, Google OAuth will work!**
 
+

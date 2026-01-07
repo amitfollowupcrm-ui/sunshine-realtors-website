@@ -120,3 +120,4 @@ vercel logs https://sunshine-realtors-website.vercel.app
 
 *Fixes deployed on: $(Get-Date)*
 
+

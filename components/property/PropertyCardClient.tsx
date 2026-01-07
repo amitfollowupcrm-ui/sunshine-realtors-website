@@ -63,3 +63,4 @@ export const PropertyCardClient: React.FC<PropertyCardClientProps> = ({ property
   );
 };
 
+

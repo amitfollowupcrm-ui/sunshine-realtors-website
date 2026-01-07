@@ -34,3 +34,4 @@ postgresql://postgres.cgodlegdxrwhpjevxlel:Supabasesecure16@aws-1-ap-south-1.poo
 
 **Note:** The transaction pooler is designed for serverless environments (like Vercel), so it may not work from local machines, but should work perfectly from Vercel's servers.
 
+

@@ -43,3 +43,4 @@ echo "   - Dummy data: ✅"
 echo ""
 echo "🔗 Your properties are now live with high-quality images!"
 
+

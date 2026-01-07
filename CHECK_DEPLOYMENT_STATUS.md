@@ -102,3 +102,4 @@ Should return JSON with properties array.
 **Last Updated:** Just now  
 **Deployment URL:** https://sunshine-realtors-website.vercel.app/buy
 
+

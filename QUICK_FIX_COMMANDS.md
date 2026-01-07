@@ -79,3 +79,4 @@ https://sunshine-realtors-website.vercel.app/admin/login
 3. If you don't see it, you may need to enable Connection Pooling first
 4. Or contact Supabase support to enable it
 
+

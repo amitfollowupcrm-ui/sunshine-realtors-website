@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from '@/lib/middleware/auth.middleware';
+import { authenticate } from '@/lib/middleware/auth.middleware';
 import { prisma } from '@/config/database';
 
-async function handler(request: NextRequest, context: { user: any }) {
+export async function GET(request: NextRequest) {
   try {
-    const { user } = context;
+    // Try to authenticate, but don't require it
+    const { user, error } = await authenticate(request, { requireAuth: false });
+
+    // If no user is authenticated, return success: false (not 401) to avoid console errors
+    if (!user || error) {
+      return NextResponse.json({
+        success: false,
+        authenticated: false,
+        user: null,
+      });
+    }
 
     // Fetch full user data with profile
     const fullUser = await prisma.user.findUnique({
@@ -15,15 +25,18 @@ async function handler(request: NextRequest, context: { user: any }) {
     });
 
     if (!fullUser) {
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({
+        success: false,
+        authenticated: false,
+        error: 'User not found',
+        user: null,
+      });
     }
 
     // Return user data (exclude password hash)
     return NextResponse.json({
       success: true,
+      authenticated: true,
       user: {
         id: fullUser.id,
         email: fullUser.email,
@@ -41,11 +54,15 @@ async function handler(request: NextRequest, context: { user: any }) {
   } catch (error: any) {
     console.error('Get user error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch user data' },
+      {
+        success: false,
+        authenticated: false,
+        error: 'Failed to fetch user data',
+        user: null,
+      },
       { status: 500 }
     );
   }
 }
 
-export const GET = withAuth(handler, { requireAuth: true });
 

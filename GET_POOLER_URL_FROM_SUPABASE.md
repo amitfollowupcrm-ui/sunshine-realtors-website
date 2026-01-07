@@ -80,3 +80,4 @@ vercel --prod
 
 **The connection pooler URL is required for serverless functions (Vercel) to work with Supabase!**
 
+

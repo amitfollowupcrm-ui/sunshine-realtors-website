@@ -23,3 +23,4 @@ https://sunshine-realtors-website.vercel.app/api/auth/google
 
 Wait 1-2 minutes, then test Google login!
 
+

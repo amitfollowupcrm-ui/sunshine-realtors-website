@@ -17,3 +17,4 @@ export const BuyerActionsClient: React.FC<BuyerActionsClientProps> = ({
   return <BuyerActions propertyId={propertyId} isFavorite={isFavorite} isInCart={isInCart} />;
 };
 
+

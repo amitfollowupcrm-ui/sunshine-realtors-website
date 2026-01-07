@@ -149,3 +149,4 @@ vercel --prod
 
 Once you've updated and redeployed, the login should work! The connection pooler is specifically designed for serverless functions like Vercel.
 
+
