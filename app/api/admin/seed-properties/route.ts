@@ -31,6 +31,20 @@ async function seedProperties(request: NextRequest) {
       }
     }
 
+    // Test database connection first
+    try {
+      await prisma.$connect();
+    } catch (connectionError: any) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Database connection failed',
+          details: connectionError.message,
+        },
+        { status: 500 }
+      );
+    }
+
     // Cities and states for seeding
     const cities = [
       { name: 'Mohali', state: 'Punjab' },
@@ -163,10 +177,14 @@ async function seedProperties(request: NextRequest) {
       {
         success: false,
         error: error.message || 'Failed to seed properties',
+        errorCode: error.code,
+        errorMeta: error.meta,
         details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
