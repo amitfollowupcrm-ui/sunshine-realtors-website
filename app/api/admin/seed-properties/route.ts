@@ -57,9 +57,9 @@ async function seedProperties(request: NextRequest) {
         data: {
           email: `seller${Date.now()}@sunshinerealtors.com`,
           fullName: 'Demo Seller',
-          password: 'dummy', // Not used for seeding
+          passwordHash: 'dummy', // Not used for seeding
           role: 'SELLER',
-          status: 'ACTIVE',
+          isActive: true,
           phone: '+91-9876543210',
         },
       });
@@ -135,7 +135,7 @@ async function seedProperties(request: NextRequest) {
               primaryImageUrl: selectedImages[0],
               imageUrls: selectedImages,
               isVerified: true,
-              yearBuilt: new Date().getFullYear() - Math.floor(Math.random() * 10),
+              ageOfConstruction: Math.floor(Math.random() * 10),
             },
           });
 
