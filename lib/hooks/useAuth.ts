@@ -120,8 +120,17 @@ export function useAuth() {
     const data = await response.json();
     
     if (data.success && data.token) {
+      // Store in localStorage for client-side access
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('refresh_token', data.refreshToken || '');
+      
+      // Also set cookie for server-side rendering
+      // Cookie expires in 7 days (matching refresh token expiry)
+      const expiresInDays = 7;
+      const expires = new Date();
+      expires.setTime(expires.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
+      document.cookie = `auth_token=${data.token}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+      
       setUser(data.user);
       return { user: data.user, token: data.token, refreshToken: data.refreshToken };
     }
@@ -146,6 +155,11 @@ export function useAuth() {
 
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
+    
+    // Also remove cookie
+    document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
     setUser(null);
     router.push('/');
   };
