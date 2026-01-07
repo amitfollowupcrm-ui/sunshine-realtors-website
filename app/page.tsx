@@ -134,7 +134,7 @@ export default async function HomePage() {
             Join thousands of property owners and dealers who trust Sunshine Realtors
           </p>
           <div className="flex gap-4 justify-center">
-            <Link href="/register">
+            <Link href="/post-property">
               <Button variant="primary" size="lg">Post Property Free</Button>
             </Link>
             <Link href="/register?type=dealer">

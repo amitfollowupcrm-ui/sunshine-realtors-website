@@ -85,7 +85,7 @@ export default function DashboardPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link href="/properties/new">
+            <Link href="/post-property">
               <Button variant="primary" className="w-full">Post Property</Button>
             </Link>
             <Link href="/dashboard/properties">

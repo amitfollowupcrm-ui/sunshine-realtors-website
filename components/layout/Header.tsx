@@ -61,6 +61,11 @@ export const Header: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
+                {(user.role === 'SELLER' || user.role === 'OWNER' || user.role === 'DEALER') && (
+                  <Link href="/post-property">
+                    <Button variant="primary" size="md">Post Property</Button>
+                  </Link>
+                )}
                 {user.role === 'BUYER' && (
                   <>
                     <Link href="/favorites" className="text-gray-700 hover:text-blue-600 transition-colors flex items-center">
@@ -84,6 +89,9 @@ export const Header: React.FC = () => {
               </>
             ) : (
               <>
+                <Link href="/post-property">
+                  <Button variant="primary" size="md">Post Property</Button>
+                </Link>
                 <Link href="/login">
                   <Button variant="ghost" size="md">Login</Button>
                 </Link>
