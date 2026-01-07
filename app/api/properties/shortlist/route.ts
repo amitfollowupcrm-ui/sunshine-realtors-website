@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
     // Create or update shortlist
     const shortlist = await prisma.propertyShortlist.upsert({
       where: {
-        userId_propertyId: {
-          userId: user.userId,
+        dealerId_propertyId: {
+          dealerId: user.userId,
           propertyId: propertyId,
         },
       },
