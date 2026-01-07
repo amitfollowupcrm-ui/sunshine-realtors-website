@@ -2,30 +2,95 @@
 
 import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
+import { prisma } from '@/config/database';
+import { getCurrentUser } from '@/lib/utils/auth';
+import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 
 async function fetchFavorites() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sunshine-realtors-website.vercel.app';
-    const response = await fetch(`${baseUrl}/api/properties/favorites`, {
-      cache: 'no-store',
-      // Note: In production, this should include authentication headers
+    // Get cookies for authentication
+    const cookieStore = await cookies();
+    const headersList = await headers();
+    
+    // Create a request-like object for getCurrentUser
+    const authHeader = headersList.get('authorization') || 
+      (cookieStore.get('auth_token')?.value ? `Bearer ${cookieStore.get('auth_token')?.value}` : null);
+    
+    const request = new Request('http://localhost', {
+      headers: {
+        authorization: authHeader || '',
+        cookie: headersList.get('cookie') || '',
+      },
     });
-
-    if (!response.ok) {
-      console.error('Failed to fetch favorites:', response.statusText);
-      return { favorites: [] };
+    
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return { favorites: [], success: false, authenticated: false };
     }
 
-    const data = await response.json();
-    return data.success ? data : { favorites: [] };
+    const favorites = await prisma.propertyFavorite.findMany({
+      where: {
+        userId: user.userId,
+      },
+      include: {
+        property: {
+          include: {
+            owner: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phone: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return {
+      success: true,
+      favorites,
+      count: favorites.length,
+      authenticated: true,
+    };
   } catch (error) {
     console.error('Error fetching favorites:', error);
-    return { favorites: [] };
+    return { favorites: [], success: false, authenticated: false };
   }
 }
 
 export default async function FavoritesPage() {
-  const { favorites = [] } = await fetchFavorites();
+  const { favorites = [], authenticated = false } = await fetchFavorites();
+
+  // Show login prompt if not authenticated
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center py-12">
+            <div className="inline-block p-6 bg-white rounded-lg shadow">
+              <div className="text-6xl mb-4">🔒</div>
+              <h2 className="text-2xl font-semibold mb-2">Login Required</h2>
+              <p className="text-gray-600 mb-4">
+                Please login as a buyer to view your favorite properties
+              </p>
+              <a
+                href="/login"
+                className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Login
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
