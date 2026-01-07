@@ -4,7 +4,16 @@ import { getCurrentUser } from '@/lib/utils/auth';
 import { PropertyCategory, PropertyType, PropertyStatus, FurnishingStatus, PossessionStatus } from '@prisma/client';
 
 // Seeding endpoint - should only be accessible to super admin
+// Also supports GET method for easier browser access with secret key
+export async function GET(request: NextRequest) {
+  return await seedProperties(request);
+}
+
 export async function POST(request: NextRequest) {
+  return await seedProperties(request);
+}
+
+async function seedProperties(request: NextRequest) {
   try {
     // For initial seeding, allow with a secret key query parameter
     // TODO: Remove this in production or make it more secure
@@ -15,7 +24,7 @@ export async function POST(request: NextRequest) {
       const user = await getCurrentUser(request);
       if (!user || (user.role !== 'SUPER_ADMIN' && user.role !== 'ADMIN')) {
         return NextResponse.json(
-          { success: false, error: 'Unauthorized. Only admins can seed data.' },
+          { success: false, error: 'Unauthorized. Only admins can seed data. Add ?key=seed2024 for initial seeding.' },
           { status: 403 }
         );
       }
