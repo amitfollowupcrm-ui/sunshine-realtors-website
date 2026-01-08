@@ -4,6 +4,7 @@
 import { prisma } from '@/config/database';
 import { cache, CacheKeys } from '@/config/redis';
 import { crmService } from './crm.service';
+import { transformPrismaPropertyToProperty } from '@/lib/utils/property.transform';
 import type {
   Property,
   PropertyCreateInput,
@@ -131,7 +132,8 @@ class PropertyService {
       crmService.syncProperty(property.id).catch(console.error);
     }
 
-    return property as unknown as Property;
+    // Transform Prisma model to Property type
+    return transformPrismaPropertyToProperty(property);
   }
 
   /**
@@ -224,7 +226,8 @@ class PropertyService {
       crmService.syncProperty(property.id).catch(console.error);
     }
 
-    return property as unknown as Property;
+    // Transform Prisma model to Property type
+    return transformPrismaPropertyToProperty(property);
   }
 
   /**
@@ -271,9 +274,11 @@ class PropertyService {
     });
 
     if (property) {
+      // Transform Prisma model to Property type
+      const transformedProperty = transformPrismaPropertyToProperty(property);
       // Cache for 1 hour
-      await cache.set(CacheKeys.property(propertyId), property, 3600);
-      return property as unknown as Property;
+      await cache.set(CacheKeys.property(propertyId), transformedProperty, 3600);
+      return transformedProperty;
     }
 
     return null;
@@ -318,7 +323,8 @@ class PropertyService {
         },
       }).catch(console.error);
 
-      return property as unknown as Property;
+      // Transform Prisma model to Property type
+      return transformPrismaPropertyToProperty(property);
     }
 
     return null;
@@ -464,8 +470,11 @@ class PropertyService {
       prisma.property.count({ where }),
     ]);
 
+    // Transform all properties to Property type
+    const transformedProperties = properties.map(transformPrismaPropertyToProperty);
+
     const result: PropertySearchResult = {
-      properties: properties as unknown as Property[],
+      properties: transformedProperties,
       total,
       page,
       limit,
@@ -506,7 +515,8 @@ class PropertyService {
       crmService.syncProperty(property.id).catch(console.error);
     }
 
-    return property as unknown as Property;
+    // Transform Prisma model to Property type
+    return transformPrismaPropertyToProperty(property);
   }
 
   /**

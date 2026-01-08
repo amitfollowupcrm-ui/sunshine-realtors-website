@@ -4,6 +4,7 @@ import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
 import { propertyService } from '@/lib/services/property.service';
 import { PropertyStatus } from '@/types/property.types';
+import { transformPropertyForCard } from '@/lib/utils/property.transform';
 
 async function fetchProperties(filters: any = {}) {
   try {
@@ -161,7 +162,7 @@ export default async function BuyPage({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {properties.length > 0 ? (
                 properties.map((property: any) => (
-                  <PropertyCardClient key={property.id} property={property} />
+                  <PropertyCardClient key={property.id} property={transformPropertyForCard(property)} />
                 ))
               ) : (
                 <div className="col-span-full text-center py-12 text-gray-500">

@@ -4,6 +4,7 @@ import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
 import { prisma } from '@/config/database';
 import { getCurrentUserFromServer } from '@/lib/utils/auth';
+import { transformPropertyForCard } from '@/lib/utils/property.transform';
 
 async function fetchCart() {
   try {
@@ -107,18 +108,7 @@ export default async function CartPage() {
               {cartItems.map((item: any) => (
                 <div key={item.id}>
                   <PropertyCardClient
-                    property={{
-                      id: item.property.id,
-                      title: item.property.title,
-                      slug: item.property.slug,
-                      primaryImageUrl: item.property.primaryImageUrl,
-                      locality: item.property.locality,
-                      city: item.property.city,
-                      state: item.property.state,
-                      price: item.property.price,
-                      bedrooms: item.property.bedrooms,
-                      builtUpArea: item.property.builtUpArea,
-                    }}
+                    property={transformPropertyForCard(item.property)}
                   />
                   {item.inquiryType && (
                     <div className="mt-2 text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded">

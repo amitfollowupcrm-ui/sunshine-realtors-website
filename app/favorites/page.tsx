@@ -4,6 +4,7 @@ import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
 import { prisma } from '@/config/database';
 import { getCurrentUserFromServer } from '@/lib/utils/auth';
+import { transformPropertyForCard } from '@/lib/utils/property.transform';
 
 async function fetchFavorites() {
   try {
@@ -100,18 +101,7 @@ export default async function FavoritesPage() {
               {favorites.map((favorite: any) => (
                 <PropertyCardClient
                   key={favorite.id}
-                  property={{
-                    id: favorite.property.id,
-                    title: favorite.property.title,
-                    slug: favorite.property.slug,
-                    primaryImageUrl: favorite.property.primaryImageUrl,
-                    locality: favorite.property.locality,
-                    city: favorite.property.city,
-                    state: favorite.property.state,
-                    price: favorite.property.price,
-                    bedrooms: favorite.property.bedrooms,
-                    builtUpArea: favorite.property.builtUpArea,
-                  }}
+                  property={transformPropertyForCard(favorite.property)}
                 />
               ))}
             </div>
