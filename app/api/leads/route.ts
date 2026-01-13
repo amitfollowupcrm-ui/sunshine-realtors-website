@@ -91,10 +91,21 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error fetching leads:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+    });
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Failed to fetch leads',
+        details: process.env.NODE_ENV === 'development' ? {
+          message: error.message,
+          code: error.code,
+          meta: error.meta,
+        } : undefined,
       },
       { status: 500 }
     );
