@@ -15,13 +15,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is a seller
-    if (user.role !== 'SELLER' && user.role !== 'OWNER' && user.role !== 'SUPER_ADMIN' && user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { success: false, error: 'Only sellers can create properties' },
-        { status: 403 }
-      );
-    }
+    // Allow all authenticated users to create properties
+    // No role restriction - any logged-in user can post properties
 
     const body = await request.json();
     const validationResult = propertyCreateSchema.safeParse(body);
