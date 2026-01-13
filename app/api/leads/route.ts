@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
     }
 
     // For non-admin users, only show their assigned leads
-    if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+    // But don't override if assignedToId filter is already set
+    if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && !assignedToId) {
       where.assignedToId = user.userId;
     }
 
