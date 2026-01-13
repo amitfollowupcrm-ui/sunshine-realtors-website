@@ -77,22 +77,34 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('[POST /api/properties] Creating property for user:', user.id);
+    console.log('[POST /api/properties] User object:', JSON.stringify({ id: user.id, email: user.email, role: user.role }));
     console.log('[POST /api/properties] Property data keys:', Object.keys(validationResult.data));
     
-    const property = await propertyService.createProperty(
-      validationResult.data,
-      user.id, // ownerId - user from authService has 'id' field
-      user.id  // listedById
-    );
+    try {
+      const property = await propertyService.createProperty(
+        validationResult.data,
+        user.id, // ownerId - user from authService has 'id' field
+        user.id  // listedById
+      );
 
-    console.log('[POST /api/properties] Property created successfully with ID:', property.id);
-    console.log('[POST /api/properties] Property ownerId:', property.ownerId);
-    console.log('[POST /api/properties] Property status:', property.status);
+      console.log('[POST /api/properties] Property created successfully with ID:', property.id);
+      console.log('[POST /api/properties] Property ownerId:', property.ownerId);
+      console.log('[POST /api/properties] Property status:', property.status);
 
-    return NextResponse.json({
-      success: true,
-      property,
-    });
+      return NextResponse.json({
+        success: true,
+        property,
+      });
+    } catch (createError: any) {
+      console.error('[POST /api/properties] Property service error:', createError);
+      console.error('[POST /api/properties] Property service error message:', createError.message);
+      console.error('[POST /api/properties] Property service error stack:', createError.stack);
+      console.error('[POST /api/properties] Property service error code:', createError.code);
+      console.error('[POST /api/properties] Property service error meta:', createError.meta);
+      
+      // Re-throw to be caught by outer catch block
+      throw createError;
+    }
   } catch (error: any) {
     console.error('[POST /api/properties] Error creating property:', error);
     console.error('[POST /api/properties] Error message:', error.message);
@@ -100,17 +112,19 @@ export async function POST(request: NextRequest) {
     console.error('[POST /api/properties] Error code:', error.code);
     console.error('[POST /api/properties] Error meta:', error.meta);
     
+    // Return detailed error for debugging
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Failed to create property',
-        details: process.env.NODE_ENV === 'development' ? {
+        details: {
           message: error.message,
           code: error.code,
-          meta: error.meta,
-        } : undefined,
+          name: error.name,
+          ...(error.meta && { meta: error.meta }),
+        },
       },
-      { status: 500 }
+      { status: error.code === 'P2002' ? 409 : error.code === 'P2003' ? 400 : 500 }
     );
   }
 }
