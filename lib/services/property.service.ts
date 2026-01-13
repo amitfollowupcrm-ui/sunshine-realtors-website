@@ -286,8 +286,15 @@ class PropertyService {
 
   /**
    * Get property by slug
+   * Guards against undefined/empty slug to prevent Prisma errors during build
    */
   async getPropertyBySlug(slug: string): Promise<Property | null> {
+    // Guard: Ensure slug is a valid non-empty string before Prisma query
+    // This prevents Prisma from being called with undefined/empty values during static generation
+    if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+      return null;
+    }
+
     const property = await prisma.property.findUnique({
       where: { slug },
       include: {
