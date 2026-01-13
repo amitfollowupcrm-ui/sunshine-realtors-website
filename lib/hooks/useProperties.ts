@@ -91,8 +91,16 @@ export function useCreateProperty() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error?.message || 'Failed to create property');
+        const errorData = await response.json();
+        // Show detailed validation errors if available
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const errorMessages = errorData.details.map((err: any) => {
+            const path = err.path?.join('.') || 'field';
+            return `${path}: ${err.message}`;
+          }).join(', ');
+          throw new Error(`Validation failed: ${errorMessages}`);
+        }
+        throw new Error(errorData.error || errorData.error?.message || 'Failed to create property');
       }
 
       return response.json();
