@@ -77,13 +77,15 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
 
-    const filters: any = {
-      status: myProperties && user ? undefined : PropertyStatus.ACTIVE, // Show all statuses for user's own properties, otherwise only ACTIVE
-    };
+    const filters: any = {};
 
     // Filter by user's properties if requested
     if (myProperties && user) {
       filters.ownerId = user.userId;
+      // Show all statuses for user's own properties (don't set status filter)
+    } else {
+      // Only show ACTIVE properties for public browsing
+      filters.status = [PropertyStatus.ACTIVE];
     }
 
     if (category) filters.category = [category];
