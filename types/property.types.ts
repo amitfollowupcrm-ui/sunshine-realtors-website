@@ -185,6 +185,8 @@ export interface PropertySearchFilters {
   isFeatured?: boolean;
   areaMin?: number;
   areaMax?: number;
+  ownerId?: string; // Filter by property owner
+  status?: PropertyStatus[]; // Filter by status (optional, defaults to ACTIVE)
   sortBy?: 'price_asc' | 'price_desc' | 'newest' | 'oldest' | 'relevance';
   page?: number;
   limit?: number;

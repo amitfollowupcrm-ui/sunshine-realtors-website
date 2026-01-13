@@ -73,12 +73,18 @@ export async function GET(request: NextRequest) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     const bedrooms = searchParams.get('bedrooms');
+    const myProperties = searchParams.get('myProperties') === 'true'; // Filter for user's own properties
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
 
     const filters: any = {
-      status: PropertyStatus.ACTIVE, // Only show active properties
+      status: myProperties && user ? undefined : PropertyStatus.ACTIVE, // Show all statuses for user's own properties, otherwise only ACTIVE
     };
+
+    // Filter by user's properties if requested
+    if (myProperties && user) {
+      filters.ownerId = user.userId;
+    }
 
     if (category) filters.category = [category];
     if (city) filters.city = [city];

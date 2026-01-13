@@ -15,6 +15,7 @@ export default function DashboardPropertiesPage() {
   const { data: propertiesData, isLoading, error, refetch } = useProperties({
     page,
     limit: 20,
+    myProperties: true, // Show only user's own properties
   });
 
   if (authLoading) {

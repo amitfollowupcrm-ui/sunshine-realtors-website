@@ -8,12 +8,15 @@ import type { Property, PropertySearchFilters, PropertySearchResult } from '@/ty
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // Fetch properties
-export function useProperties(filters: PropertySearchFilters) {
+export function useProperties(filters: PropertySearchFilters & { myProperties?: boolean }) {
   return useQuery<PropertySearchResult>({
     queryKey: ['properties', 'search', filters],
     queryFn: async () => {
       const params = new URLSearchParams();
       
+      if (filters.myProperties) {
+        params.append('myProperties', 'true');
+      }
       if (filters.category) {
         params.append('category', filters.category.join(','));
       }

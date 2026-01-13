@@ -360,6 +360,8 @@ class PropertyService {
       isFeatured,
       areaMin,
       areaMax,
+      ownerId,
+      status,
       sortBy = 'newest',
       page = 1,
       limit = 20,
@@ -379,8 +381,19 @@ class PropertyService {
     // Build where clause
     const where: any = {
       deletedAt: null,
-      status: 'ACTIVE',
     };
+
+    // Status filter: use provided status filter, or default to ACTIVE
+    if (status && status.length > 0) {
+      where.status = { in: status };
+    } else {
+      where.status = 'ACTIVE';
+    }
+
+    // Filter by owner if specified
+    if (ownerId) {
+      where.ownerId = ownerId;
+    }
 
     if (category && category.length > 0) {
       where.category = { in: category };
