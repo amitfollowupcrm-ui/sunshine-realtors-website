@@ -1,114 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/config/database';
 import { getCurrentUser } from '@/lib/utils/auth';
-import { LeadSource, LeadStatus, InquiryType } from '@prisma/client';
 
-// POST /api/leads - Create a new inquiry/lead
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { propertyId, name, email, phone, message, inquiryType } = body;
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-    // Validation
-    if (!propertyId || !name || !phone) {
-      return NextResponse.json(
-        { success: false, error: 'Property ID, name, and phone are required' },
-        { status: 400 }
-      );
-    }
-
-    // Check if property exists
-    const property = await prisma.property.findUnique({
-      where: { id: propertyId },
-      select: { id: true, title: true, ownerId: true },
-    });
-
-    if (!property) {
-      return NextResponse.json(
-        { success: false, error: 'Property not found' },
-        { status: 404 }
-      );
-    }
-
-    // Get current user (optional - for logged-in users)
-    const user = await getCurrentUser(request);
-
-    // Create lead
-    const lead = await prisma.lead.create({
-      data: {
-        source: LeadSource.PROPERTY_INQUIRY,
-        propertyId,
-        name,
-        email: email || null,
-        phone,
-        inquiryType: inquiryType || InquiryType.BUY,
-        notes: message || null,
-        status: LeadStatus.NEW,
-        priority: 'medium',
-      },
-      include: {
-        property: {
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            price: true,
-            city: true,
-            state: true,
-          },
-        },
-      },
-    });
-
-    // Increment inquiry count on property
-    await prisma.property.update({
-      where: { id: propertyId },
-      data: {
-        inquiryCount: { increment: 1 },
-      },
-    });
-
-    // Create activity log
-    await prisma.leadActivity.create({
-      data: {
-        leadId: lead.id,
-        userId: user?.userId || null,
-        activityType: 'INQUIRY_CREATED',
-        title: 'Property Inquiry Submitted',
-        description: `Inquiry submitted for property: ${property.title}`,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: 'Inquiry submitted successfully',
-      lead: {
-        id: lead.id,
-        name: lead.name,
-        email: lead.email,
-        phone: lead.phone,
-        status: lead.status,
-        createdAt: lead.createdAt,
-        property: lead.property,
-      },
-    });
-  } catch (error: any) {
-    console.error('Error creating lead:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Failed to submit inquiry',
-      },
-      { status: 500 }
-    );
-  }
-}
-
-// GET /api/leads - Get all leads (admin only)
+// GET /api/leads - Get leads (authenticated users only)
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
-    
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -116,80 +17,87 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if user is admin
-    if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
-      return NextResponse.json(
-        { success: false, error: 'Forbidden - Admin access required' },
-        { status: 403 }
-      );
-    }
-
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const assignedTo = searchParams.get('assignedTo');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
+    const status = searchParams.get('status');
+    const assignedToId = searchParams.get('assignedToId');
+    const propertyId = searchParams.get('propertyId');
 
     // Build where clause
-    const where: any = {};
+    const where: any = {
+      deletedAt: null,
+    };
+
+    // Filter by status if provided
     if (status) {
-      where.status = status;
-    }
-    if (assignedTo) {
-      where.assignedToId = assignedTo;
+      const statusArray = status.split(',').map(s => s.trim());
+      where.status = { in: statusArray };
     }
 
-    // Fetch leads
+    // Filter by assigned user if provided
+    if (assignedToId) {
+      where.assignedToId = assignedToId;
+    }
+
+    // Filter by property if provided
+    if (propertyId) {
+      where.propertyId = propertyId;
+    }
+
+    // For non-admin users, only show their own leads
+    if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+      where.OR = [
+        { assignedToId: user.userId },
+        { createdById: user.userId },
+      ];
+    }
+
+    // Fetch leads with pagination
     const [leads, total] = await Promise.all([
       prisma.lead.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * limit,
-        take: limit,
         include: {
-          property: {
-            select: {
-              id: true,
-              title: true,
-              slug: true,
-              price: true,
-              city: true,
-              state: true,
-              primaryImageUrl: true,
-            },
-          },
           assignedTo: {
             select: {
               id: true,
               fullName: true,
               email: true,
-              role: true,
             },
           },
-          activities: {
-            take: 5,
-            orderBy: { createdAt: 'desc' },
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  fullName: true,
-                },
-              },
+          createdBy: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+            },
+          },
+          property: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+              city: true,
+              state: true,
             },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip: (page - 1) * limit,
+        take: limit,
       }),
       prisma.lead.count({ where }),
     ]);
 
     return NextResponse.json({
       success: true,
-      leads,
-      pagination: {
+      data: {
+        leads,
+        total,
         page,
         limit,
-        total,
         totalPages: Math.ceil(total / limit),
       },
     });
@@ -204,5 +112,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-
