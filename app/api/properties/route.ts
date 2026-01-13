@@ -22,11 +22,16 @@ export async function POST(request: NextRequest) {
     const validationResult = propertyCreateSchema.safeParse(body);
 
     if (!validationResult.success) {
+      console.error('Validation errors:', validationResult.error.issues);
       return NextResponse.json(
         {
           success: false,
           error: 'Validation failed',
-          details: validationResult.error.issues,
+          details: validationResult.error.issues.map(issue => ({
+            path: issue.path,
+            message: issue.message,
+            code: issue.code,
+          })),
         },
         { status: 400 }
       );

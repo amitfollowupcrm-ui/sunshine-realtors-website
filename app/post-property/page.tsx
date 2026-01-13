@@ -233,6 +233,11 @@ export default function PostPropertyPage() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
+        // Show detailed validation errors if available
+        if (data.details && Array.isArray(data.details)) {
+          const errorMessages = data.details.map((err: any) => `${err.path?.join('.') || 'field'}: ${err.message}`).join(', ');
+          throw new Error(`Validation failed: ${errorMessages}`);
+        }
         throw new Error(data.error || 'Failed to create property');
       }
 
