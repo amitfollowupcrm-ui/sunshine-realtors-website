@@ -210,7 +210,7 @@ export default function PostPropertyPage() {
           amenities: amenitiesList,
         },
         possessionStatus: formData.possessionStatus,
-        availableFrom: formData.availableFrom || undefined,
+        availableFrom: formData.availableFrom ? new Date(formData.availableFrom).toISOString() : undefined,
         constructionYear: formData.constructionYear ? parseInt(formData.constructionYear) : undefined,
         media: {
           primaryImageUrl: formData.primaryImageUrl || formData.imageUrls[0] || undefined,
