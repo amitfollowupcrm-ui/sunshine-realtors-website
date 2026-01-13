@@ -4,19 +4,58 @@ import { getCurrentUser } from '@/lib/utils/auth';
 import { propertyCreateSchema } from '@/lib/validation/property.schemas';
 import { PropertyCategory, PropertyStatus } from '@/types/property.types';
 
-// Create a new property (for SELLER role)
+// Create a new property - ALL authenticated users can create properties
 export async function POST(request: NextRequest) {
   try {
-    const user = await getCurrentUser(request);
-    if (!user) {
+    // Get authentication token from header or cookie
+    const authHeader = request.headers.get('authorization');
+    let token: string | undefined;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+    
+    // If no token in header, try to get from cookies
+    if (!token) {
+      const cookieHeader = request.headers.get('cookie');
+      if (cookieHeader) {
+        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, string>);
+        token = cookies['auth_token'] || cookies['token'];
+      }
+    }
+    
+    // Validate token and get user
+    if (!token) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
+        { success: false, error: 'Authentication token required' },
         { status: 401 }
       );
     }
-
-    // Allow all authenticated users to create properties
-    // No role restriction - any logged-in user can post properties
+    
+    const { authService } = await import('@/lib/services/auth.service');
+    const payload = await authService.validateToken(token);
+    
+    if (!payload) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired token' },
+        { status: 401 }
+      );
+    }
+    
+    const user = await authService.getUserById(payload.userId);
+    
+    if (!user || !user.isActive || user.deletedAt) {
+      return NextResponse.json(
+        { success: false, error: 'User account is inactive' },
+        { status: 401 }
+      );
+    }
+    
+    // ALL authenticated users can create properties - NO role restrictions
 
     const body = await request.json();
     const validationResult = propertyCreateSchema.safeParse(body);
