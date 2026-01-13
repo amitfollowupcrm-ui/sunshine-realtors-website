@@ -236,8 +236,8 @@ export default function PostPropertyPage() {
         throw new Error(data.error || 'Failed to create property');
       }
 
-      // Success - redirect to property detail page or dashboard
-      router.push(`/properties/${data.property.slug}`);
+      // Success - redirect to dashboard (property list)
+      router.push('/dashboard/properties');
     } catch (err: any) {
       setError(err.message || 'Failed to submit property. Please try again.');
     } finally {
