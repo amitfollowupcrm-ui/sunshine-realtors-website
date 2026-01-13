@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '../ui/Button';
 import { useAuth } from '@/lib/hooks/useAuth';
 
