@@ -45,12 +45,9 @@ export async function GET(request: NextRequest) {
       where.propertyId = propertyId;
     }
 
-    // For non-admin users, only show their own leads
+    // For non-admin users, only show their assigned leads
     if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
-      where.OR = [
-        { assignedToId: user.userId },
-        { createdById: user.userId },
-      ];
+      where.assignedToId = user.userId;
     }
 
     // Fetch leads with pagination
@@ -59,13 +56,6 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           assignedTo: {
-            select: {
-              id: true,
-              fullName: true,
-              email: true,
-            },
-          },
-          createdBy: {
             select: {
               id: true,
               fullName: true,
