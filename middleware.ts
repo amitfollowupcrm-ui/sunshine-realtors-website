@@ -39,6 +39,12 @@ const protectedRoutes = [
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // CRITICAL: API routes must bypass middleware completely
+  // This is a safety check even though matcher should exclude them
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next();
+  }
+
   // Check if route is public
   const isPublicRoute = publicRoutes.some(route => {
     if (route.includes('[') && route.includes(']')) {
