@@ -68,6 +68,14 @@ export function useAuth() {
       body: JSON.stringify({ email, password }),
     });
 
+    // Check if response is JSON (API route working) or HTML (route failed)
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('API route returned non-JSON response:', text.substring(0, 200));
+      throw new Error('Server error: API endpoint is not working. Please contact support or try again later.');
+    }
+
     if (!response.ok) {
       let errorMessage = 'Login failed';
       try {
@@ -75,6 +83,7 @@ export function useAuth() {
         errorMessage = error.error || errorMessage;
       } catch (e) {
         // If response is not JSON, use default message
+        errorMessage = `Login failed with status ${response.status}`;
       }
       throw new Error(errorMessage);
     }
@@ -115,6 +124,14 @@ export function useAuth() {
       body: JSON.stringify(userData),
     });
 
+    // Check if response is JSON (API route working) or HTML (route failed)
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('API route returned non-JSON response:', text.substring(0, 200));
+      throw new Error('Server error: API endpoint is not working. Please contact support or try again later.');
+    }
+
     if (!response.ok) {
       let errorMessage = 'Registration failed';
       try {
@@ -122,6 +139,7 @@ export function useAuth() {
         errorMessage = error.error || errorMessage;
       } catch (e) {
         // If response is not JSON, use default message
+        errorMessage = `Registration failed with status ${response.status}`;
       }
       throw new Error(errorMessage);
     }

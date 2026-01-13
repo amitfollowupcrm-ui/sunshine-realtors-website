@@ -298,7 +298,7 @@ export default function AdminLeadsPage() {
                               {lead.property.title}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {lead.property.location?.city || lead.property.city}, {lead.property.location?.state || lead.property.state}
+                              {lead.property.city}, {lead.property.state}
                             </div>
                           </div>
                         ) : (

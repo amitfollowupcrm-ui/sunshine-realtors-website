@@ -3,6 +3,10 @@ import { authService } from '@/lib/services/auth.service';
 import { rateLimiters } from '@/lib/middleware/rateLimit.middleware';
 import { loginSchema } from '@/lib/validation/auth.schemas';
 
+// Ensure this route runs on Node.js runtime (default, but explicit for clarity)
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     console.log('=== LOGIN API CALLED ===');
