@@ -76,22 +76,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('[POST /api/properties] Creating property for user:', user.id);
+    console.log('[POST /api/properties] Property data keys:', Object.keys(validationResult.data));
+    
     const property = await propertyService.createProperty(
       validationResult.data,
       user.id, // ownerId - user from authService has 'id' field
       user.id  // listedById
     );
 
+    console.log('[POST /api/properties] Property created successfully with ID:', property.id);
+    console.log('[POST /api/properties] Property ownerId:', property.ownerId);
+    console.log('[POST /api/properties] Property status:', property.status);
+
     return NextResponse.json({
       success: true,
       property,
     });
   } catch (error: any) {
-    console.error('Error creating property:', error);
+    console.error('[POST /api/properties] Error creating property:', error);
+    console.error('[POST /api/properties] Error message:', error.message);
+    console.error('[POST /api/properties] Error stack:', error.stack);
+    console.error('[POST /api/properties] Error code:', error.code);
+    console.error('[POST /api/properties] Error meta:', error.meta);
+    
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Failed to create property',
+        details: process.env.NODE_ENV === 'development' ? {
+          message: error.message,
+          code: error.code,
+          meta: error.meta,
+        } : undefined,
       },
       { status: 500 }
     );
@@ -112,20 +129,29 @@ export async function GET(request: NextRequest) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     const bedrooms = searchParams.get('bedrooms');
+    const statusParam = searchParams.get('status'); // Status filter for admin
     const myProperties = searchParams.get('myProperties') === 'true'; // Filter for user's own properties
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
 
     const filters: any = {};
 
+    // Check if user is admin or super admin
+    const isAdmin = user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN');
+
     // Filter by user's properties if requested
     if (myProperties && user) {
+      // getCurrentUser returns { userId: string, ... }, so use userId
       filters.ownerId = user.userId;
       // Show all statuses for user's own properties (don't set status filter)
-    } else {
-      // Only show ACTIVE properties for public browsing
+    } else if (isAdmin && statusParam) {
+      // Admin can filter by specific status
+      filters.status = statusParam.split(',').map(s => s.trim()) as PropertyStatus[];
+    } else if (!isAdmin) {
+      // Only show ACTIVE properties for public browsing (non-admin users)
       filters.status = [PropertyStatus.ACTIVE];
     }
+    // Admin/Super Admin without status filter: Show all properties (no status filter, no ownerId filter)
 
     if (category) filters.category = [category];
     if (city) filters.city = [city];

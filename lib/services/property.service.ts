@@ -383,10 +383,14 @@ class PropertyService {
       deletedAt: null,
     };
 
-    // Status filter: use provided status filter, or default to ACTIVE
+    // Status filter: use provided status filter if specified
+    // If no status filter is provided and no ownerId filter, default to ACTIVE for public browsing
+    // If ownerId is specified, show all statuses (handled by caller)
     if (status && status.length > 0) {
       where.status = { in: status };
-    } else {
+    } else if (!ownerId) {
+      // Only default to ACTIVE if no ownerId filter (public browsing)
+      // If ownerId is set, don't set status filter (show all statuses for that user's properties)
       where.status = 'ACTIVE';
     }
 
@@ -479,6 +483,8 @@ class PropertyService {
             select: {
               id: true,
               fullName: true,
+              email: true,
+              phone: true,
             },
           },
           images: {

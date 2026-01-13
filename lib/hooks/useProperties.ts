@@ -41,6 +41,9 @@ export function useProperties(filters: PropertySearchFilters & { myProperties?: 
       if (filters.bathrooms) {
         params.append('bathrooms', filters.bathrooms.join(','));
       }
+      if (filters.status && filters.status.length > 0) {
+        params.append('status', filters.status.join(','));
+      }
       if (filters.sortBy) {
         params.append('sortBy', filters.sortBy);
       }
