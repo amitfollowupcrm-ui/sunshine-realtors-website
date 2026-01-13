@@ -278,33 +278,18 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               <InquiryForm propertyId={property.id} propertyTitle={property.title} />
             </div>
 
-            {/* Owner Info */}
-            {property.owner && (
+            {/* Owner Info - Commented out until owner relationship is added */}
+            {/* {property.ownerId && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-4">Owner Information</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm text-gray-600">Name</p>
-                    <p className="font-medium">{property.owner.fullName}</p>
+                    <p className="text-sm text-gray-600">Owner ID</p>
+                    <p className="font-medium">{property.ownerId}</p>
                   </div>
-                  {property.owner.phone && (
-                    <div>
-                      <p className="text-sm text-gray-600">Phone</p>
-                      <p className="font-medium">{property.owner.phone}</p>
-                    </div>
-                  )}
-                  {property.owner.email && (
-                    <div>
-                      <p className="text-sm text-gray-600">Email</p>
-                      <p className="font-medium">{property.owner.email}</p>
-                    </div>
-                  )}
-                  <Button variant="outline" className="w-full">
-                    View Profile
-                  </Button>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
