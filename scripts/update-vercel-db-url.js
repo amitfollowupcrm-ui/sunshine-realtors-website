@@ -19,3 +19,4 @@ console.log('\n⚠️  IMPORTANT: After updating, redeploy:');
 console.log('   vercel --prod\n');
 
 
+

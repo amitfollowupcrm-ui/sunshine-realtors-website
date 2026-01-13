@@ -3,7 +3,7 @@
 'use client';
 
 import React from 'react';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';

@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/Button';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -83,3 +83,4 @@ postgresql://postgres.cgodlegdxrwhpjevxlel:%4016Supabase@aws-0-ap-south-1.pooler
 *Get the exact connection string from your Supabase dashboard for best results!*
 
 
+

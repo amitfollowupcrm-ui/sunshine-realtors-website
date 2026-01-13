@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -133,5 +133,6 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+
 
 

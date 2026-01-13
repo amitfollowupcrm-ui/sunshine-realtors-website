@@ -147,3 +147,4 @@ After deploying to Vercel, update your frontend components to use the Vercel API
 You can still use Firebase Hosting for static assets (images, etc.) and Vercel for the dynamic app. However, a single Vercel deployment is simpler.
 
 
+

@@ -132,3 +132,4 @@ Headers: Authorization: Bearer <token>
 **Issue: Properties don't show in favorites/cart**
 - Solution: Check database to verify records were created
 
+

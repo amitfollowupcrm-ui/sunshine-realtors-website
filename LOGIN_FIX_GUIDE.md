@@ -167,3 +167,4 @@ fetch('https://sunshine-realtors-website.vercel.app/api/auth/simple-login', {
 **Try the Simple Login endpoint first - it should work!**
 
 
+

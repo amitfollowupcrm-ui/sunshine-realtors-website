@@ -82,3 +82,4 @@ Then use **Option 2** to fix the Git integration so future pushes auto-deploy.
 **Solution:** Manual redeploy from Vercel dashboard
 
 
+

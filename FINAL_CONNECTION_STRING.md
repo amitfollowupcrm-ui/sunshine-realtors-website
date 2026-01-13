@@ -34,3 +34,4 @@ postgresql://postgres.cgodlegdxrwhpjevxlel:Supabasesecure16@aws-1-ap-south-1.poo
 **All configuration is now complete!**
 
 
+

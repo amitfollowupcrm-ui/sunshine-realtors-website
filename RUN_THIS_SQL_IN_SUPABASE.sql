@@ -66,3 +66,4 @@ ALTER TABLE "property_shortlist" ADD CONSTRAINT "property_shortlist_dealer_id_fk
 ALTER TABLE "property_shortlist" ADD CONSTRAINT "property_shortlist_property_id_fkey" FOREIGN KEY ("property_id") REFERENCES "properties"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 
+

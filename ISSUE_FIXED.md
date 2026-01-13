@@ -24,3 +24,4 @@ The Google OAuth error showed:
 **The issue was a newline character in the Client ID. This is now fixed!** 🎉
 
 
+

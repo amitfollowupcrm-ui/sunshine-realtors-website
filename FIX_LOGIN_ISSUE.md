@@ -79,3 +79,4 @@ vercel logs https://sunshine-realtors-website.vercel.app --follow
 Look for database connection errors or authentication errors.
 
 
+

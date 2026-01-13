@@ -97,3 +97,4 @@ Then follow the steps above to connect Git for future auto-deployments.
 **Expected Time:** 2-3 minutes to connect + 5 minutes to deploy
 
 
+

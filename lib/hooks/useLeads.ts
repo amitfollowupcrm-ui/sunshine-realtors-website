@@ -17,7 +17,7 @@ export function useLeads(filters?: {
   return useQuery({
     queryKey: ['leads', filters],
     queryFn: async () => {
-      const token = localStorage.getItem('auth_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       const params = new URLSearchParams();
 
       if (filters?.status) {
@@ -45,7 +45,6 @@ export function useLeads(filters?: {
       const data = await response.json();
       return data.data;
     },
-    enabled: !!localStorage.getItem('auth_token'),
   });
 }
 
@@ -54,7 +53,7 @@ export function useLead(id: string) {
   return useQuery({
     queryKey: ['leads', id],
     queryFn: async () => {
-      const token = localStorage.getItem('auth_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       const response = await fetch(`${API_BASE_URL}/leads/${id}`, {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
@@ -68,7 +67,7 @@ export function useLead(id: string) {
       const data = await response.json();
       return data.data;
     },
-    enabled: !!id && !!localStorage.getItem('auth_token'),
+    enabled: !!id,
   });
 }
 
@@ -105,7 +104,7 @@ export function useUpdateLead() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const token = localStorage.getItem('auth_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       const response = await fetch(`${API_BASE_URL}/leads/${id}`, {
         method: 'PUT',
         headers: {
@@ -135,7 +134,7 @@ export function useAssignLead() {
 
   return useMutation({
     mutationFn: async ({ id, dealerId, priority }: { id: string; dealerId: string; priority?: string }) => {
-      const token = localStorage.getItem('auth_token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
       const response = await fetch(`${API_BASE_URL}/leads/${id}/assign`, {
         method: 'POST',
         headers: {
@@ -158,6 +157,7 @@ export function useAssignLead() {
     },
   });
 }
+
 
 
 

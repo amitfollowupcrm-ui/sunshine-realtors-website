@@ -63,3 +63,4 @@ vercel --prod
 **The region is usually visible in the connection string provided by Supabase dashboard!**
 
 
+

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/context/AuthContext';
 import { MediaUpload } from '@/components/property/MediaUpload';
 import { PropertyCategory, PropertyType, FurnishingStatus, PossessionStatus } from '@/types/property.types';
 

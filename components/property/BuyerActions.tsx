@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/context/AuthContext';
 
 interface BuyerActionsProps {
   propertyId: string;
@@ -114,5 +114,6 @@ export const BuyerActions: React.FC<BuyerActionsProps> = ({
     </div>
   );
 };
+
 
 

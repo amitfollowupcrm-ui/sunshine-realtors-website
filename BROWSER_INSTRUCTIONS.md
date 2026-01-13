@@ -53,3 +53,4 @@ https://sunshine-realtors-website.vercel.app/api/auth/google
 **Once you add this URI in Google Cloud Console, Google OAuth will work!**
 
 
+

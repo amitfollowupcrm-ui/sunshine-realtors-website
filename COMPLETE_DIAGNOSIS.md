@@ -79,3 +79,4 @@ This will show the exact database error.
 4. Or check Vercel logs for exact error
 
 
+

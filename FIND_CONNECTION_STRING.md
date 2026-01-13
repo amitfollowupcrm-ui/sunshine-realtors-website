@@ -74,3 +74,4 @@ The pooler might not be enabled or visible. In that case:
 - Or check if there's a "Connection Info" button/link in the Connection pooling configuration section
 
 
+

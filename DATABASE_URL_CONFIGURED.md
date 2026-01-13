@@ -28,3 +28,4 @@ postgresql://postgres.cgodlegdxrwhpjevxlel:Supabasesec16@aws-0-ap-south-1.pooler
 **Note:** This file was created to trigger a new deployment after adding the DATABASE_URL environment variable.
 
 
+

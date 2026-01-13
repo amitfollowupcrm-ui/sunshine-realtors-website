@@ -1,5 +1,8 @@
 // Cart Page - Buyer's Cart Properties
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
 import { prisma } from '@/config/database';

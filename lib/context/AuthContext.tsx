@@ -1,8 +1,6 @@
-// React hooks for authentication
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -14,20 +12,33 @@ interface User {
   role: string;
 }
 
-export function useAuth() {
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ user: User; token: string; refreshToken?: string }>;
+  register: (userData: {
+    email: string;
+    password: string;
+    fullName: string;
+    phone?: string;
+    role?: string;
+  }) => Promise<{ user: User; token: string; refreshToken?: string }>;
+  logout: () => Promise<void>;
+  isAuthenticated: boolean;
+  checkAuth: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
 
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('auth_token');
       
-      // Always try to check auth, even without token (endpoint now returns 200 for unauthenticated)
       const response = await fetch(`${API_BASE_URL}/auth/me`, {
         headers: token
           ? {
@@ -41,23 +52,26 @@ export function useAuth() {
         if (data.success && data.authenticated && data.user) {
           setUser(data.user);
         } else {
-          // Not authenticated or invalid token - clear tokens silently
           localStorage.removeItem('auth_token');
           localStorage.removeItem('refresh_token');
+          setUser(null);
         }
       } else {
-        // Only log non-200 responses as errors
-        console.error('Auth check failed:', response.status, response.statusText);
         localStorage.removeItem('auth_token');
         localStorage.removeItem('refresh_token');
+        setUser(null);
       }
     } catch (error) {
-      // Network errors - only log actual failures
-      console.error('Auth check network error:', error);
+      console.error('Auth check error:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   const login = async (email: string, password: string) => {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -68,7 +82,6 @@ export function useAuth() {
       body: JSON.stringify({ email, password }),
     });
 
-    // Check if response is JSON (API route working) or HTML (route failed)
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
@@ -82,7 +95,6 @@ export function useAuth() {
         const error = await response.json();
         errorMessage = error.error || errorMessage;
       } catch (e) {
-        // If response is not JSON, use default message
         errorMessage = `Login failed with status ${response.status}`;
       }
       throw new Error(errorMessage);
@@ -91,12 +103,9 @@ export function useAuth() {
     const data = await response.json();
     
     if (data.success && data.token) {
-      // Store in localStorage for client-side access
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('refresh_token', data.refreshToken || '');
       
-      // Also set cookie for server-side rendering
-      // Cookie expires in 7 days (matching refresh token expiry)
       const expiresInDays = 7;
       const expires = new Date();
       expires.setTime(expires.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
@@ -124,7 +133,6 @@ export function useAuth() {
       body: JSON.stringify(userData),
     });
 
-    // Check if response is JSON (API route working) or HTML (route failed)
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
       const text = await response.text();
@@ -138,7 +146,6 @@ export function useAuth() {
         const error = await response.json();
         errorMessage = error.error || errorMessage;
       } catch (e) {
-        // If response is not JSON, use default message
         errorMessage = `Registration failed with status ${response.status}`;
       }
       throw new Error(errorMessage);
@@ -147,12 +154,9 @@ export function useAuth() {
     const data = await response.json();
     
     if (data.success && data.token) {
-      // Store in localStorage for client-side access
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('refresh_token', data.refreshToken || '');
       
-      // Also set cookie for server-side rendering
-      // Cookie expires in 7 days (matching refresh token expiry)
       const expiresInDays = 7;
       const expires = new Date();
       expires.setTime(expires.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
@@ -183,7 +187,6 @@ export function useAuth() {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('refresh_token');
     
-    // Also remove cookie
     document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     
@@ -191,15 +194,27 @@ export function useAuth() {
     router.push('/');
   };
 
-  return {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-    isAuthenticated: !!user,
-  };
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+        checkAuth,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-
-
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

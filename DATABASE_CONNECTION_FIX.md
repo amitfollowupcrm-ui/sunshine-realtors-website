@@ -57,3 +57,4 @@ If "Tenant or user not found" persists, the password might be wrong. Options:
 **Next Steps:** Once connection works, we can proceed with seeding the database!
 
 
+
