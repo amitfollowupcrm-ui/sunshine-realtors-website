@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
 
     const property = await propertyService.createProperty(
       validationResult.data,
-      user.userId,
-      user.userId // listedById
+      user.id, // ownerId - user from authService has 'id' field
+      user.id  // listedById
     );
 
     return NextResponse.json({
