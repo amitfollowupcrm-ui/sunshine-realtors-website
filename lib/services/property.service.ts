@@ -384,15 +384,13 @@ class PropertyService {
     };
 
     // Status filter: use provided status filter if specified
-    // If no status filter is provided and no ownerId filter, default to ACTIVE for public browsing
-    // If ownerId is specified, show all statuses (handled by caller)
+    // If status filter is explicitly provided (array with values), use it
+    // If status is undefined or empty array, don't set status filter (show all statuses)
+    // This allows admin users to see all properties regardless of status
     if (status && status.length > 0) {
       where.status = { in: status };
-    } else if (!ownerId) {
-      // Only default to ACTIVE if no ownerId filter (public browsing)
-      // If ownerId is set, don't set status filter (show all statuses for that user's properties)
-      where.status = 'ACTIVE';
     }
+    // If no status filter provided, don't set where.status (Prisma will return all statuses)
 
     // Filter by owner if specified
     if (ownerId) {
