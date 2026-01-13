@@ -25,9 +25,7 @@ export async function GET(request: NextRequest) {
     const propertyId = searchParams.get('propertyId');
 
     // Build where clause
-    const where: any = {
-      deletedAt: null,
-    };
+    const where: any = {};
 
     // Filter by status if provided
     if (status) {
