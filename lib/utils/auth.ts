@@ -23,20 +23,26 @@ export async function getCurrentUserFromServer() {
     const headersList = await headers();
     
     // Try to get token from Authorization header first
-    let token = headersList.get('authorization')?.replace('Bearer ', '');
+    // headersList.get() returns string | null, so we use nullish coalescing
+    const authHeader = headersList.get('authorization');
+    let token: string | undefined = authHeader?.replace('Bearer ', '');
     
     // If no token in header, try to get from cookies
-    // Check both 'token' (from login API) and 'auth_token' (from client-side)
+    // cookieStore.get().value returns string | undefined
+    // Use nullish coalescing (??) to avoid introducing null
+    // This ensures token type remains strictly string | undefined
     if (!token) {
-      token = cookieStore.get('token')?.value || 
-              cookieStore.get('auth_token')?.value || 
-              null;
+      token = cookieStore.get('token')?.value 
+           ?? cookieStore.get('auth_token')?.value;
+      // token is now string | undefined (never null)
     }
     
+    // Check if token exists (undefined check)
     if (!token) {
       return null;
     }
     
+    // At this point, token is guaranteed to be string (not undefined)
     // Validate token
     const payload = await authService.validateToken(token);
     if (!payload) {
@@ -60,5 +66,3 @@ export async function getCurrentUserFromServer() {
     return null;
   }
 }
-
-
