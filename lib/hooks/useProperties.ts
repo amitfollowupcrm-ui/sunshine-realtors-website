@@ -44,12 +44,12 @@ export function useProperties(filters: PropertySearchFilters) {
       params.append('page', (filters.page || 1).toString());
       params.append('limit', (filters.limit || 20).toString());
 
-      const response = await fetch(`${API_BASE_URL}/properties/search?${params.toString()}`);
+      const response = await fetch(`${API_BASE_URL}/properties?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch properties');
       }
       const data = await response.json();
-      return data.data;
+      return data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
