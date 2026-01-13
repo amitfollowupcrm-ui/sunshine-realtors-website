@@ -73,9 +73,12 @@ export async function GET(request: NextRequest) {
     // Get additional statistics for each user
     const usersWithStats = await Promise.all(
       users.map(async (user) => {
-        // Count properties viewed (this would require a view tracking table)
-        // For now, we'll use a placeholder - you may need to add PropertyView table
-        const propertiesViewed = 0; // TODO: Implement property view tracking
+        // Count properties viewed
+        const propertiesViewed = await prisma.propertyView.count({
+          where: {
+            userId: user.id,
+          },
+        });
 
         // Count properties in cart (active items)
         const cartCount = user._count.cartItems;
