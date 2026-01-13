@@ -1,4 +1,9 @@
 // Property Detail Page
+// This page uses dynamic route parameters and Prisma queries,
+// so it MUST be dynamically rendered to prevent static generation issues
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 import React from 'react';
 import Image from 'next/image';
@@ -16,16 +21,17 @@ interface PropertyDetailPageProps {
   };
 }
 
-// Required for static export
-export async function generateStaticParams() {
-  // Return at least one placeholder for static export
-  // In production, you'd fetch all property slugs from your database
-  return [{ slug: 'sample-property' }];
-}
-
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
-  // Fetch property by slug
-  const property = await propertyService.getPropertyBySlug(params.slug);
+  // Extract slug from params
+  const { slug } = params;
+  
+  // Guard against undefined/empty slug before calling Prisma
+  if (!slug || typeof slug !== 'string' || slug.trim() === '') {
+    notFound();
+  }
+
+  // Fetch property by slug (Prisma query is now safe - slug is guaranteed to be valid string)
+  const property = await propertyService.getPropertyBySlug(slug);
 
   if (!property) {
     notFound();
@@ -296,6 +302,3 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
     </div>
   );
 }
-
-
-

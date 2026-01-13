@@ -1,4 +1,9 @@
 // Favorites Page - Buyer's Favorite Properties
+// This page uses getCurrentUserFromServer() which uses cookies(),
+// so it MUST be dynamically rendered
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 import React from 'react';
 import { PropertyCardClient } from '@/components/property/PropertyCardClient';
@@ -127,5 +132,3 @@ export default async function FavoritesPage() {
     </div>
   );
 }
-
-
