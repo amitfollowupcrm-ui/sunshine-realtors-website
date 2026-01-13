@@ -4,6 +4,9 @@ import { getCurrentUser } from '@/lib/utils/auth';
 import { propertyCreateSchema } from '@/lib/validation/property.schemas';
 import { PropertyCategory, PropertyStatus } from '@/types/property.types';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // Create a new property - ALL authenticated users can create properties
 export async function POST(request: NextRequest) {
   try {
